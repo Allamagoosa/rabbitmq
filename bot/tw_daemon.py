@@ -31,12 +31,18 @@ class ReceiveCommand(object):
             sys.exit(0)
 
     def _callback(self, ch, method, properties, body):
-        """ on response """
+        """ receive task and execute daemon """
         print "Received task: {0}".format(body)
+        self.logic = twitter_daemon.TwitterBot()
         if body:
-            logic = twitter_daemon.TwitterBot()
-            print "Run twitter_daemon.post_tweet({0})".formant(body)
-            self.result = logic.post_tweet(body)
+            self.task_list = body.split(' ')
+            if self.task_list[0]=="post_tweet":
+                print "Run post_tweet {0}".format(self.task_list[1])
+                self.result = self.logic.post_tweet(self.task_list[1])
+            elif self.task_list[0]=="search":
+                print "Run search {0}".format(self.task_list[1])
+                self.logic.search(self.task_list[1]) #seach hasn't return value
+                self.result = "search done"
         self._send_result()
 
     def _send_result(self):
@@ -47,3 +53,4 @@ class ReceiveCommand(object):
 
 receiver = ReceiveCommand()
 receiver.receive_task()
+

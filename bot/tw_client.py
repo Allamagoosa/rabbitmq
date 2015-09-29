@@ -2,7 +2,10 @@
 #
 # author:
 #
-""" Run bot logic """
+""" Run bot logic 
+If --Run Task-- is selected, the task will be sent to tw_daemon.py. 
+Then tw_deamon will run main twitter logic (twitter_daemon.py)
+"""
 import yaml # pip install pyyaml is needed
 import logging
 import pika # pip install pika is needed
@@ -73,8 +76,8 @@ class SendCommand(object):
         print " [x] Sent {0}".format(self.task)
         self._consume()
 
-#conf = YamlConfig()
-#print conf.get_config()
+conf = YamlConfig()
+conf.get_config()
 
 sender = SendCommand()
 
@@ -87,11 +90,19 @@ while select:
     """)
     select = raw_input("Select ")
     if select=="1":
+        print ("\t\t--> post_tweet message\n\t\t--> search q")
         task = raw_input("Enter task: ")
+        task_list = task.split(' ')
+        if task_list[0] != "post_tweet" and task_list[0] != "search" or len(task_list) != 2: 
+            print "Not valid command"
+            break
         print "\n\tRun task:"
         sender.send_task(task)
     elif select=="2":
-        print "\n\tPrint help: If --Run Task-- is selected, the task will be sent to tw_daemon.py. Then tw_deamon will run main twitter logic (twitter_daemon.py)" 
+        print "\n\tPrint help: If --Run Task-- is selected, the task will be sent to tw_daemon.py." 
+        print "\tThen tw_deamon will run main twitter logic (twitter_daemon.py)"
+        print "\t\t commands for daemon:"
+        print ("\t\t--> post_tweet message\n\t\t--> search q")
     elif select=="0":
         print "\n\tExit."
         break
